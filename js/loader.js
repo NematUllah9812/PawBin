@@ -28,6 +28,15 @@
 
     var s = document.createElement('script');
     s.src = 'js/app.js';
+    s.onload = function () {
+      /* extra page scripts, e.g. product.html loads js/product.js */
+      var extra = (document.body.getAttribute('data-scripts') || '').split(',').filter(Boolean);
+      (function next() {
+        var src = extra.shift(); if (!src) return;
+        var sc = document.createElement('script'); sc.src = src; sc.onload = next;
+        document.body.appendChild(sc);
+      })();
+    };
     document.body.appendChild(s);
   }
 

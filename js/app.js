@@ -164,6 +164,7 @@
       add(slug,name,price,img);
     });
   });
+  window.PawbinAdd=add;
   cartBtn.addEventListener('click',function(){openDrawer(true)});
   $('#cartClose').addEventListener('click',function(){openDrawer(false)});
   scrim.addEventListener('click',function(){openDrawer(false)});
@@ -176,7 +177,7 @@
 
   /* ---------- newsletter ---------- */
   var form=$('#newsForm');
-  form.addEventListener('submit',function(e){
+  if(form) form.addEventListener('submit',function(e){
     e.preventDefault();
     var v=$('#newsEmail').value.trim();
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)){ toast('That email looks off — mind checking it?'); $('#newsEmail').focus(); return; }

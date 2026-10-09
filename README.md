@@ -17,7 +17,9 @@ pawbin/
 ├── css/styles.css      # full design system (tokens → components)
 ├── js/
 │   ├── loader.js       # fetches + injects components, then boots app.js
-│   └── app.js          # all interactions (tabs, cart, slots, rain, …)
+│   ├── app.js          # all interactions (tabs, cart, slots, rain, …)
+│   ├── data.js         # product catalogue: details, specs, ratings, reviews
+│   └── product.js      # renders product.html from data.js (?p=slug)
 ├── components/         # 15 sections, in page order
 │   ├── announcement.html  header.html     hero.html
 │   ├── reviews.html       why.html        shop.html      (catalogue + tabs)
@@ -60,6 +62,14 @@ infinite marquee rows · *One shelf for every kind of play* with 4 filterable ta
 marquees · **trade & drop-shipping** section with a live-looking supplier console ·
 stories + quote/stats · guides · FAQ accordion · trust strip · final CTA + newsletter ·
 dark footer with the **click-a-letter toy-rain easter egg** · cart drawer · cookie banner.
+
+## Product detail pages
+Every catalogue card and bundle links to `product.html?p=<slug>`, rendered at
+runtime from `js/data.js`: breadcrumb, photo, rating summary with star histogram,
+price, tags, delivery/guarantee facts, two-paragraph details, spec table,
+**honest reviews** (varied 4.2–4.8 averages; 2★–5★ individual reviews, verified
+badges, helpful counts) and a computed "Goes well with" related-items row
+(shared species + play-style tags; bundles show their contents).
 
 ## Working interactions
 Tabs (click + arrow keys), add-to-cart with `localStorage` persistence, quantity +/−,
