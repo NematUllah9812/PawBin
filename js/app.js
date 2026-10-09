@@ -71,10 +71,25 @@
       next.classList.add('on'); layers[active].classList.remove('on'); active^=1;
     }
     slot._advance=advance;
-    if(!reduce){ setInterval(advance, 2500+idx*420); }
+    if(!reduce){ slot._timer=setInterval(advance, 2500+idx*420); }
     slot.addEventListener('click',advance);
-    slot.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();advance();} });
   });
+  /* pause hero timers when the hero leaves the viewport or the tab is hidden */
+  (function(){
+    var hero=$('.hero'); if(!hero||reduce) return;
+    var inView=true;
+    function sync(){
+      var run=inView&&!document.hidden;
+      $$('.slot').forEach(function(sl){
+        if(run&&!sl._timer){ sl._timer=setInterval(sl._advance,2500); }
+        else if(!run&&sl._timer){ clearInterval(sl._timer); sl._timer=0; }
+      });
+    }
+    if('IntersectionObserver' in window){ new IntersectionObserver(function(es){inView=es[0].isIntersecting;sync();},{threshold:0}).observe(hero); }
+    document.addEventListener('visibilitychange',sync);
+  })();
+  var shuffleBtn=$('#shuffleToys');
+  if(shuffleBtn){ shuffleBtn.addEventListener('click',function(){ $$('.slot').forEach(function(sl){ sl._advance&&sl._advance(); }); }); }
 
   /* ---------- tabs ---------- */
   var tabs=$$('.tab');
@@ -124,13 +139,24 @@
   function save(){ try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){} }
   function count(){ return cart.reduce(function(n,i){return n+i.q},0) }
   function total(){ return cart.reduce(function(n,i){return n+i.q*i.p},0) }
+  var mainEl=document.getElementById('main')||document.querySelector('main');
+  function trapFocus(e){
+    if(e.key!=='Tab') return;
+    var f=$$('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])',drawer)
+      .filter(function(el){return el.offsetParent!==null});
+    if(!f.length) return;
+    var first=f[0], last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
   function openDrawer(open){
     drawer.dataset.open=String(open); scrim.dataset.open=String(open);
     drawer.setAttribute('aria-hidden',String(!open));
     cartBtn.setAttribute('aria-expanded',String(open));
+    if(mainEl){ mainEl.inert=open; }
     document.body.style.overflow=open?'hidden':'';
-    if(open){ $('#cartClose').focus(); }
-    else if(drawer.contains(document.activeElement)){ cartBtn.focus(); }
+    if(open){ drawer.addEventListener('keydown',trapFocus); $('#cartClose').focus(); }
+    else { drawer.removeEventListener('keydown',trapFocus); if(drawer.contains(document.activeElement)){ cartBtn.focus(); } }
   }
   function render(){
     var box=$('#cartItems'), t=total(), n=count();
@@ -147,7 +173,7 @@
         '<div class="qty"><button type="button" data-dec="'+ix+'" aria-label="Decrease quantity">−</button><span>'+i.q+'</span>'+
         '<button type="button" data-inc="'+ix+'" aria-label="Increase quantity">+</button></div>'+
         '<button class="rm" type="button" data-rm="'+ix+'">Remove</button></div>'+
-        '<b style="font-size:14.5px">'+money(i.p*i.q)+'</b></div>';
+        '<b class="ci-total">'+money(i.p*i.q)+'</b></div>';
     }).join('');
     $$('[data-inc]',box).forEach(function(b){b.onclick=function(){cart[+b.dataset.inc].q++;save();render()}});
     $$('[data-dec]',box).forEach(function(b){b.onclick=function(){var i=cart[+b.dataset.dec];i.q--;if(i.q<1)cart.splice(+b.dataset.dec,1);save();render()}});
@@ -159,15 +185,15 @@
     if(found){found.q++} else {cart.push({s:slug,n:name,p:price,img:img,q:1})}
     save(); render(); openDrawer(true); toast('Added to basket · '+name);
   }
-  $$('[data-add]').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var card=btn.closest('[data-slug]');
-      var slug=btn.dataset.slug||(card&&card.dataset.slug);
-      var name=btn.dataset.name||(card&&card.dataset.name)||'Pawbin toy';
-      var price=+(btn.dataset.price||(card&&card.dataset.price)||0);
-      var img=btn.dataset.img||(card&&card.dataset.img)||'dog-kong-classic.jpg';
-      add(slug,name,price,img);
-    });
+  /* delegated so buttons rendered later (PDP, related) also work */
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('[data-add]'); if(!btn) return;
+    var card=btn.closest('[data-slug]');
+    var slug=btn.dataset.add||(card&&card.dataset.slug);
+    var name=btn.dataset.name||(card&&card.dataset.name)||'Pawbin toy';
+    var price=+(btn.dataset.price||(card&&card.dataset.price)||0);
+    var img=btn.dataset.img||(card&&card.dataset.img)||'dog-kong-classic.webp';
+    add(slug,name,price,img);
   });
   window.PawbinAdd=add;
   cartBtn.addEventListener('click',function(){openDrawer(true)});
@@ -199,7 +225,7 @@
   /* ---------- cookie banner ---------- */
   var cookie=$('#cookie'), CKEY='pawbin_cookies';
   if(!localStorage.getItem(CKEY)){
-    setTimeout(function(){cookie.dataset.show='true'},1400);
+    setTimeout(function(){cookie.dataset.show='true'},3500);
   }
   function closeCookies(v){ try{localStorage.setItem(CKEY,v)}catch(e){} cookie.dataset.show='false'; }
   $('#cookieAccept').addEventListener('click',function(){closeCookies('accept')});
@@ -216,6 +242,7 @@
       var n=reduce?4:10;
       for(var i=0;i<n;i++){
         var im=document.createElement('img');
+        if(document.querySelectorAll('.falling').length>40) return;
         var slug=PICKS[(Math.random()*PICKS.length)|0]; im.src=imgPath(slug); im.className='falling'; im.alt=''; im.dataset.f=slug+'.webp';
         im.style.left=(box.left+Math.random()*box.width-18)+'px';
         im.style.top=(box.top-10)+'px';
@@ -230,13 +257,26 @@
   }
 
   
+  /* base prefix for pages that live one folder deep (product/<slug>.html) */
+  var pageBase=location.pathname.split('/').length>2?'../':'';
+
   /* ---------- cross-page anchors: hash links whose target only exists on index.html ---------- */
   addEventListener('click',function(e){
     var a=e.target.closest('a[href^="#"]'); if(!a) return;
     var id=a.getAttribute('href').slice(1); if(!id) return;
     if(document.getElementById(id)) return; /* target lives here: native jump */
     e.preventDefault();
-    location.href='index.html#'+id;
+    location.href=pageBase+'index.html#'+id;
+  });
+
+  /* ---------- marquee pause toggles (WCAG 2.2.2) ---------- */
+  $$('.mq-toggle').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var sec=btn.closest('section')||btn.parentElement;
+      var on=sec.classList.toggle('mq-paused');
+      btn.setAttribute('aria-pressed',String(on));
+      btn.textContent=on?'Resume the shelf':'Pause the shelf';
+    });
   });
 
   /* ---------- reveal on scroll ---------- */

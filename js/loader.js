@@ -17,7 +17,7 @@
     if (failed.length) {
       var host = document.getElementById('app') || document.body;
       host.innerHTML =
-        '<div style="max-width:560px;margin:14vh auto;padding:32px;background:#fff;border:1px solid rgba(19,33,26,.1);border-radius:20px;font:16px/1.6 system-ui,sans-serif;color:#13211A">' +
+        '<div class="boot-fallback">' +
         '<h1 style="margin:0 0 12px;font-size:22px">Pawbin needs a local web server</h1>' +
         '<p style="margin:0 0 12px;color:#3B4C41">This page assembles itself from the <b>components/</b> folder at runtime, which browsers block when a file is opened directly (<code>file://</code>) or when a file is missing.</p>' +
         '<p style="margin:0 0 12px;color:#3B4C41">Missing: <b>' + failed.join(', ') + '</b></p>' +

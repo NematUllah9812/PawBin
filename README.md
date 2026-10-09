@@ -99,6 +99,48 @@ trade from £4.10/unit, blind-branded dispatch, and integration with Shopify,
 WooCommerce, Etsy, eBay, Amazon, Avasam, CJ Dropshipping, Spocket and the Royal Mail
 Click & Drop API — all channels a UK pet-toy reseller can realistically automate.
 
+## Static build (SSG) for production
+
+`pawbin.vercel.app` no longer fetches components at runtime. `build.mjs` (run automatically by
+Vercel via `vercel.json`) compiles the component sources into `dist/`:
+
+- `dist/index.html` — all 15 components inlined; zero runtime fragment fetches, hero is
+  `<link rel="preload">`-ed so the preload scanner finds it immediately.
+- `dist/product/<slug>.html` — one pre-rendered page per toy (28 pages) with per-product
+  `<title>`, meta description, canonical, Open Graph/Twitter tags and JSON-LD `Product`
+  schema. Renders fully with JavaScript disabled.
+- `dist/product.html` — legacy `?p=` runtime page kept for old links.
+- The runtime loader (`js/loader.js`) remains as a **dev-only** convenience for
+  `python3 -m http.server`; it is stripped from built output.
+- `vercel.json` also sets `Cache-Control: public, max-age=31536000, immutable` on
+  `/assets`, `/css` and `/js` (HTML stays `must-revalidate`).
+
+The PDP markup lives in one pure renderer (`js/pdp-render.js`) shared by the browser and the
+build, so pre-rendered and runtime pages can never drift apart.
+
+## Audit remediation (2026-10-09 critique)
+
+- **Architecture**: runtime fetch waterfall removed in production (see above).
+- **Caching**: immutable headers for static assets via `vercel.json`.
+- **WCAG contrast**: `.btn-green:hover` keeps dark text on `--g-400` (9.5:1); `--ink-4`
+  darkened to `#57695E` (5.6:1); footer legal copy `--footer-txt` (7:1); stars use
+  `--amber-700` (3.8:1, passes the 3:1 graphical rule); green graphics use `--g-700`.
+- **Colour semantics**: coral (`--coral:#EE6A48`, 6.1:1 with `--coral-ink`) now marks
+  conversion actions — add-to-basket, checkout, Shop-bundles CTAs, cart badge — while green
+  stays the trust/brand hue. Near-identical tint/dark hexes consolidated onto tokens.
+- **Typography**: phantom "Inter" removed from the stack; only standard weights 600/700/900;
+  heading tracking relaxed (-.02em) and hero leading raised to 1.04 so wrapped lines never collide.
+- **Breakpoints**: 8 ad-hoc widths collapsed to 640 / 768 / 1024.
+- **CSS hygiene**: all 48 static inline `style=""` attributes replaced with utility classes;
+  dead code purged (`.badge-sale`, `.btn-quiet`, `.stack-*`, …).
+- **A11y / UX**: cart drawer is a real dialog (`role="dialog"`, `aria-modal`, focus trap,
+  `inert` page behind it); marquees have visible pause toggles + `:focus-within` pause and
+  `content-visibility:auto`; hero slot icons moved out of the heading's accessibility tree with
+  a separate "shuffle the toys" button; guide CTAs renamed to "Get this guide in the Friday
+  Drop" so the label matches the action; cookie banner delayed to 3.5 s.
+- **CPU**: hero cycling timers pause when the hero is off-screen or the tab is hidden; the
+  footer toy-rain caps concurrent falling nodes.
+
 ## Cross-page navigation & back-to-top fixes
 
 - **Hash links from product pages:** a click interceptor in `js/app.js` detects `#section` links
