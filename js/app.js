@@ -34,9 +34,12 @@
   var onScroll=function(){header.dataset.scrolled=(window.scrollY>10)?'true':'false'};
   onScroll(); addEventListener('scroll',onScroll,{passive:true});
 
-  /* ---------- back to top ---------- */
-  var toTop=$('#toTop');
-  var onScrollTop=function(){ toTop.dataset.show=(window.scrollY>600)?'true':'false'; };
+  /* ---------- back to top (hides again once the footer is on screen) ---------- */
+  var toTop=$('#toTop'), footerVis=false;
+  var onScrollTop=function(){ toTop.dataset.show=(window.scrollY>600 && !footerVis)?'true':'false'; };
+  if('IntersectionObserver' in window && $('#footer')){
+    new IntersectionObserver(function(en){ footerVis=en[0].isIntersecting; onScrollTop(); },{threshold:0.04}).observe($('#footer'));
+  }
   onScrollTop(); addEventListener('scroll',onScrollTop,{passive:true});
   toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); });
 

@@ -378,6 +378,10 @@ details.item p{padding:0 0 18px;color:var(--ink-2);font-size:15px;max-width:78ch
 .footer .badge-row span{font-size:11.5px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:6px 11px}
 .footer-bottom{margin-top:52px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center;justify-content:space-between;font-size:13px}
 .footer-bottom nav{display:flex;flex-wrap:wrap;gap:16px}
+.footer-bottom .top-link{display:inline-flex;align-items:center;gap:7px;font-weight:750;color:#CDEBB7}
+.footer-bottom .top-link:hover{color:#fff}
+.footer-bottom .top-link svg{transition:transform .18s ease}
+.footer-bottom .top-link:hover svg{transform:translateY(-3px)}
 .socials{display:flex;gap:8px}
 .socials a{width:36px;height:36px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:grid;place-items:center;color:#E8F5E1}
 .socials a:hover{background:var(--g-600);color:#0B1A12;border-color:var(--g-600)}
@@ -430,15 +434,14 @@ body:has(#cookie[data-show="true"]) .toast{bottom:118px}
 @media(max-width:640px){body:has(#cookie[data-show="true"]) .toast{bottom:176px}}
 
 /* ---------- back to top ---------- */
-.to-top{position:fixed;right:18px;bottom:18px;z-index:130;width:46px;height:46px;border-radius:99px;background:var(--inverse);color:#DFF3D2;display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .25s ease,transform .25s ease,background .2s ease,visibility 0s linear .25s}
+.to-top{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:130;width:46px;height:46px;border-radius:99px;background:var(--inverse);color:#DFF3D2;display:grid;place-items:center;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(12px);transition:opacity .25s ease,transform .25s ease,background .2s ease,visibility 0s linear .25s}
 .to-top[data-show="true"]{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .25s ease,background .2s ease}
 .to-top:hover{background:var(--g-700)}
 .to-top:active{transform:translateY(1px)}
-/* keep the bottom-right / bottom-center / bottom-left overlays off each other */
-body:has(.toast[data-show="true"]) .to-top{bottom:96px}
-body:has(#cookie[data-show="true"]) .to-top{bottom:118px}
-body:has(#cookie[data-show="true"]):has(.toast[data-show="true"]) .to-top{bottom:190px}
+/* cede the corner while the cookie banner is open instead of levitating above it */
+body:has(#cookie[data-show="true"]) .to-top{opacity:0;visibility:hidden;transform:translateY(12px)}
+/* phones: smaller, tucked tight into the corner */
 @media(max-width:640px){
-  body:has(#cookie[data-show="true"]) .to-top{bottom:176px}
-  body:has(#cookie[data-show="true"]):has(.toast[data-show="true"]) .to-top{bottom:252px}
+  .to-top{width:40px;height:40px;right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  .to-top svg{width:16px;height:16px}
 }
