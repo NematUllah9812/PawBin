@@ -40,9 +40,12 @@ function assemble(html) {
     return fs.readFileSync(path.join(SRC, 'components', name + '.html'), 'utf8').trim();
   });
 }
-/* dev loader is not needed once everything is inlined */
+/* dev loader is not needed once everything is inlined; the #boot
+   splash only makes sense while the loader runs, so drop it too */
 function stripLoader(html, scripts) {
   html = html.replace(/<script[^>]*src="js\/loader\.js"[^>]*>\s*<\/script>/, scripts);
+  html = html.replace(/<div id="boot"[\s\S]*?<\/div>\s*/, '');
+  html = html.replace(/<style>\s*#boot[\s\S]*?<\/style>/, '');
   return html;
 }
 

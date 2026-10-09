@@ -1,5 +1,6 @@
 (function(){
   'use strict';
+  var bootSplash=document.getElementById('boot'); if(bootSplash) bootSplash.remove();
   var $=function(s,c){return (c||document).querySelector(s)};
   var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
   var money=function(p){return '£'+(p/100).toFixed(2)};

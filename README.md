@@ -141,6 +141,21 @@ build, so pre-rendered and runtime pages can never drift apart.
 - **CPU**: hero cycling timers pause when the hero is off-screen or the tab is hidden; the
   footer toy-rain caps concurrent falling nodes.
 
+## Re-audit fixes (second pass)
+
+- **Ghost `#boot` splash**: removed from built output (`build.mjs` strips the div and its
+  inline CSS) and `app.js` deletes it at boot in dev mode too — no more 60vh gap under the footer.
+- **Logo on subpages**: header logo is now a real `index.html` link (rewritten to
+  `../index.html` on nested product pages) instead of a `#top` hash that trapped shoppers on
+  the current page.
+- **Canonical harmony**: every canonical / og:url / JSON-LD id now points at
+  `https://pawbin.vercel.app` — no split authority.
+- **Guide CTAs**: remaining "Read the guide" buttons (the ones with trailing arrow SVGs the
+  first rename missed) now say "Get this guide in the Friday drop".
+- **Responsive payloads**: 192px `assets/thumbs/` WebP variants (24 files, 67 KB total) now
+  feed every 96px/160px box that previously downloaded 820–1024px images; the full-size file
+  remains only as the `data-f` 404 fallback.
+
 ## Cross-page navigation & back-to-top fixes
 
 - **Hash links from product pages:** a click interceptor in `js/app.js` detects `#section` links
