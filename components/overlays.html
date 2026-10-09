@@ -1,0 +1,31 @@
+<!-- ═══════════ CART DRAWER ═══════════ -->
+<div class="scrim" id="scrim" data-open="false"></div>
+<aside class="drawer" id="drawer" data-open="false" aria-hidden="true" aria-label="Your basket">
+  <div class="drawer-head">
+    <b>Your basket</b>
+    <button class="icon-btn" type="button" id="cartClose" aria-label="Close basket">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+    </button>
+  </div>
+  <div class="ship-bar" id="shipBar">Add <b>£25.00</b> for free tracked UK delivery<div class="bar"><i id="barFill"></i></div></div>
+  <div class="drawer-items" id="cartItems">
+    <p class="empty">Your basket is empty. The shelf above is a good place to start.</p>
+  </div>
+  <div class="drawer-foot">
+    <div class="tot"><span class="muted">Subtotal</span><b id="cartTotal">£0.00</b></div>
+    <button class="btn btn-primary btn-block" type="button" id="checkout">Demo checkout</button>
+    <span class="muted" style="font-size:12.5px;text-align:center">Free returns · 60-day chew-proof promise · Klarna available</span>
+  </div>
+</aside>
+
+<!-- ═══════════ COOKIE BANNER ═══════════ -->
+<div class="cookie" id="cookie" data-show="false" role="region" aria-label="Cookie preferences">
+  <p>We use cookies for the basket and to measure which toys people actually look at. <a href="#legal">Read more</a></p>
+  <div class="row">
+    <button class="btn btn-primary btn-sm" type="button" id="cookieAccept">Accept</button>
+    <button class="btn btn-ghost btn-sm" type="button" id="cookieDeny">Deny</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" data-show="false" role="status" aria-live="polite"></div>
+
