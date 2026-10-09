@@ -34,6 +34,12 @@
   var onScroll=function(){header.dataset.scrolled=(window.scrollY>10)?'true':'false'};
   onScroll(); addEventListener('scroll',onScroll,{passive:true});
 
+  /* ---------- back to top ---------- */
+  var toTop=$('#toTop');
+  var onScrollTop=function(){ toTop.dataset.show=(window.scrollY>600)?'true':'false'; };
+  onScrollTop(); addEventListener('scroll',onScrollTop,{passive:true});
+  toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); });
+
   /* ---------- mobile menu ---------- */
   var burger=$('#burger'), mm=$('#mobileMenu');
   burger.addEventListener('click',function(){

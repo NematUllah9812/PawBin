@@ -62,9 +62,10 @@ stories + quote/stats · guides · FAQ accordion · trust strip · final CTA + n
 dark footer with the **click-a-letter toy-rain easter egg** · cart drawer · cookie banner.
 
 ## Working interactions
-Tabs, add-to-cart with `localStorage` persistence, quantity +/−, free-shipping
-progress bar, toast notifications, newsletter validation, FAQ accordion, scroll reveal,
-header `data-scrolled` morph, cookie accept/deny memory, and the footer toy-rain.
+Tabs (click + arrow keys), add-to-cart with `localStorage` persistence, quantity +/−,
+free-shipping progress bar, toast notifications, back-to-top button (appears after
+600px of scroll), newsletter validation, FAQ accordion, scroll reveal, header
+`data-scrolled` morph, cookie accept/deny memory, and the footer toy-rain.
 
 ## The range (real, drop-shippable-in-the-UK product types)
 **Dogs** — KONG Classic chew (£11.99) · Chuckit!-style ball launcher 26M (£14.99) ·
