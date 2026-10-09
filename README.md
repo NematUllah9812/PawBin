@@ -99,6 +99,43 @@ trade from £4.10/unit, blind-branded dispatch, and integration with Shopify,
 WooCommerce, Etsy, eBay, Amazon, Avasam, CJ Dropshipping, Spocket and the Royal Mail
 Click & Drop API — all channels a UK pet-toy reseller can realistically automate.
 
+## Cross-page navigation & back-to-top fixes
+
+- **Hash links from product pages:** a click interceptor in `js/app.js` detects `#section` links
+  whose target only exists on `index.html` (Dogs, Cats, Bundles, Trade, Learn, FAQ…) and routes
+  them to `index.html#section` instead of doing nothing. Anchors that exist on the current page
+  (`#top`, `#reviews`, `#legal`) keep their native behaviour.
+- **`openFromHash` now scrolls to *any* section id**, not just shop tabs — needed because the
+  component fragments are injected after `load`, so the browser's own on-load anchor scroll
+  never finds them.
+- **Back-to-top on short pages:** the "hide at the footer" observer now requires ≥50% of the
+  footer to be visible (was 4%). On product pages the footer used to peek in mid-scroll and the
+  button vanished almost immediately; now it behaves like on the homepage. It still hides while
+  the cookie banner is open and while you are actually at the footer (the footer has a permanent
+  "Back to top" link).
+
+## Performance
+
+Measured in headless Chromium (1440×950, cold cache) before → after:
+
+| Page | Before | After |
+|---|---|---|
+| index.html | 2,453 KB / 66 req | **1,290 KB / 66 req** (−47%) |
+| product.html | n/a (jpg era) | 314 KB / 14 req |
+
+What changed:
+
+- **Every image is now WebP** (quality 78): `assets/` went from 3,449 KB to 1,714 KB on disk
+  (−50%); a typical product photo dropped from ~44 KB to ~12 KB. The hero gets
+  `fetchpriority="high"` + `decoding="async"` so LCP starts immediately.
+- **156 `<img>` tags got intrinsic `width`/`height`** from the real files, eliminating layout
+  shift as below-fold images stream in.
+- Everything below the fold stays `loading="lazy"`; the 16 tiny product "icon" crops remain
+  separate files so they cache independently and stay a few KB each.
+
+Remaining budget is honest photography-sized WebP (biggest: band-wide 112 KB, hero 93 KB).
+Further wins would need an image CDN / `srcset` variants, which a static demo doesn't justify.
+
 ## Demo-only notes
 Fictional brand and copy (Pawbin Ltd, Sheffield address, order numbers). Product names
 such as KONG, Chuckit! and Catit remain the property of their owners; prices, review

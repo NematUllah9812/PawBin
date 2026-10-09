@@ -27,7 +27,7 @@
     return (+d[2]) + ' ' + m[(+d[1]) - 1] + ' ' + d[0];
   }
   function imgTag(f, alt, eager) {
-    return '<img src="assets/img/' + f + '.jpg" data-f="' + f + '.jpg" alt="' + alt + '"' + (eager ? '' : ' loading="lazy" decoding="async"') + '>';
+    return '<img src="assets/img/' + f + '.webp" data-f="' + f + '.webp" alt="' + alt + '"' + (eager ? '' : ' loading="lazy" decoding="async"') + '>';
   }
   function shared(a, b) { var n = 0; a.forEach(function (t) { if (b.indexOf(t) >= 0) n++; }); return n; }
   function related(slug) {

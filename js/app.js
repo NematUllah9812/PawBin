@@ -20,7 +20,7 @@
     }
     base=best; return base;
   }
-  var imgPath=function(slug){return assetBase()+'icons/'+slug+'.jpg'};
+  var imgPath=function(slug){return assetBase()+'icons/'+slug+'.webp'};
 
   /* ---------- toast ---------- */
   var toastEl=$('#toast'), toastT;
@@ -38,7 +38,7 @@
   var toTop=$('#toTop'), footerVis=false;
   var onScrollTop=function(){ toTop.dataset.show=(window.scrollY>600 && !footerVis)?'true':'false'; };
   if('IntersectionObserver' in window && $('#footer')){
-    new IntersectionObserver(function(en){ footerVis=en[0].isIntersecting; onScrollTop(); },{threshold:0.04}).observe($('#footer'));
+    new IntersectionObserver(function(en){ footerVis=en[0].isIntersecting; onScrollTop(); },{threshold:0.5}).observe($('#footer'));
   }
   onScrollTop(); addEventListener('scroll',onScrollTop,{passive:true});
   toTop.addEventListener('click',function(){ window.scrollTo({top:0,behavior:reduce?'auto':'smooth'}); });
@@ -108,7 +108,12 @@
         var panel=document.getElementById(btn.getAttribute('aria-controls'));
         if(panel){ requestAnimationFrame(function(){ panel.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); }); }
       }
+      return;
     }
+    /* any other hash: scroll to that section (sections are injected after load,
+       so the browser's own on-load anchor scroll never got a chance) */
+    var el=document.getElementById(h);
+    if(el){ requestAnimationFrame(function(){ el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'}); }); }
   }
   openFromHash(); addEventListener('hashchange',openFromHash);
 
@@ -149,7 +154,7 @@
     $$('[data-rm]',box).forEach(function(b){b.onclick=function(){cart.splice(+b.dataset.rm,1);save();render()}});
   }
   function add(slug,name,price,img){
-    img=String(img).replace(/\.jpg$/,'');
+    img=String(img).replace(/\.(?:jpe?g|webp)$/i,'');
     var found=cart.filter(function(i){return i.s===slug})[0];
     if(found){found.q++} else {cart.push({s:slug,n:name,p:price,img:img,q:1})}
     save(); render(); openDrawer(true); toast('Added to basket · '+name);
@@ -211,7 +216,7 @@
       var n=reduce?4:10;
       for(var i=0;i<n;i++){
         var im=document.createElement('img');
-        var slug=PICKS[(Math.random()*PICKS.length)|0]; im.src=imgPath(slug); im.className='falling'; im.alt=''; im.dataset.f=slug+'.jpg';
+        var slug=PICKS[(Math.random()*PICKS.length)|0]; im.src=imgPath(slug); im.className='falling'; im.alt=''; im.dataset.f=slug+'.webp';
         im.style.left=(box.left+Math.random()*box.width-18)+'px';
         im.style.top=(box.top-10)+'px';
         var dur=(1.1+Math.random()*1.5).toFixed(2);
@@ -223,6 +228,16 @@
       }
     });
   }
+
+  
+  /* ---------- cross-page anchors: hash links whose target only exists on index.html ---------- */
+  addEventListener('click',function(e){
+    var a=e.target.closest('a[href^="#"]'); if(!a) return;
+    var id=a.getAttribute('href').slice(1); if(!id) return;
+    if(document.getElementById(id)) return; /* target lives here: native jump */
+    e.preventDefault();
+    location.href='index.html#'+id;
+  });
 
   /* ---------- reveal on scroll ---------- */
   var reveals=$$('.reveal');
